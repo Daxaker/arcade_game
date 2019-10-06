@@ -51,11 +51,6 @@ public class PlayerController : MonoBehaviour
         float vertical = Input.GetAxis("Vertical");
 
         Vector3 movement = new Vector3(horizontal, 0, vertical);
-
-        if (movement.magnitude > 1)
-        {
-            movement.Normalize();
-        }
         
         Move(movement);
     }
