@@ -6,15 +6,22 @@ using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
-    [Range(0, 255)]
+    [Range(0, 25)]
     public float velocity = 0.5f;
 
     public Space relativeTo = Space.World;
     private Transform _player;
+
+    private Vector3 lastPosition = Vector3.zero;
+    private float speed = 0f;
+
+    private Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
         _player = gameObject.transform;
+        animator = this.GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -40,6 +47,10 @@ public class PlayerController : MonoBehaviour
             strife = 1;
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             strife = -1;
+
+        speed = (_player.position - lastPosition).magnitude;
+        lastPosition = _player.position;
+        animator.SetFloat("speed", speed);
 
         Vector3 movement = new Vector3(strife,0,forward);
         _player.Translate(velocity * Time.fixedDeltaTime * movement, relativeTo);
