@@ -12,9 +12,6 @@ public class PlayerController : MonoBehaviour
     public Space relativeTo = Space.World;
     private Transform _player;
 
-    private Vector3 lastPosition = Vector3.zero;
-    private float speed = 0f;
-
     private Animator animator;
 
     // Start is called before the first frame update
@@ -36,23 +33,40 @@ public class PlayerController : MonoBehaviour
         //print(mouse.ToString());
         mouse = new Vector3(mouse.x, 0, mouse.z); 
         _player.LookAt(mouse);
-        
-        float forward = 0;
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            forward = 1;
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            forward = -1;
-        float strife = 0;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            strife = 1;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            strife = -1;
+        float animVert, animHoriz;
 
-        speed = (_player.position - lastPosition).magnitude;
-        lastPosition = _player.position;
-        animator.SetFloat("speed", speed);
 
-        Vector3 movement = new Vector3(strife,0,forward);
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        animHoriz = horizontal;
+        animVert = vertical;
+
+
+        //if (mouse.z < _player.position.z)
+        //{
+        //    animVert = -vertical;
+        //}
+        //if (mouse.x < _player.position.x)
+        //{
+        //    animHoriz = -horizontal;
+        //}
+
+
+        Vector3 animPos = new Vector3(animHoriz + _player.position.x, 0, animVert + _player.position.y);
+
+        Vector3 newAnimPos =  Vector3.RotateTowards(animPos, mouse, 1, 0);
+
+        Vector3 movement = new Vector3(horizontal, 0, vertical);
+
+        Debug.Log("animPos:" + animPos);
+        Debug.Log("newAnimPos:" + newAnimPos);
+
+        animator.SetFloat("forward", newAnimPos.x - _player.position.x);
+        animator.SetFloat("turn", newAnimPos.z - _player.position.z);
+
+
+      
+
         _player.Translate(velocity * Time.fixedDeltaTime * movement, relativeTo);
     }
 }
