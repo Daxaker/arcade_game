@@ -14,11 +14,21 @@ public class PlayerController : MonoBehaviour
 
     private Animator animator;
 
+    Transform cam;
+    Vector3 camForward;
+    Vector3 move;
+    Vector3 moveInput;
+
+    float forwardAmount;
+    float turnAmount;
+
     // Start is called before the first frame update
     void Start()
     {
         _player = gameObject.transform;
         animator = this.GetComponentInChildren<Animator>();
+
+        cam = Camera.main.transform;
     }
 
     // Update is called once per frame
@@ -27,45 +37,63 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    void Move(Vector3 move)
+    {
+        if (move.magnitude > 1)
+        {
+            move.Normalize();
+        }
+
+        this.moveInput = move;
+
+        ConvertMoveInput();
+        UpdateAnimator();
+    }
+
+    void ConvertMoveInput()
+    {
+        Vector3 localMove = transform.InverseTransformDirection(moveInput);
+        turnAmount = localMove.x;
+        forwardAmount = localMove.z;
+    }
+
+    void UpdateAnimator()
+    {
+        animator.SetFloat("forward", forwardAmount);//, 0.1f,Time.deltaTime);
+        animator.SetFloat("turn", turnAmount);//, 0.1f, Time.deltaTime);
+    }
+
     private void FixedUpdate()
     {
         var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //print(mouse.ToString());
         mouse = new Vector3(mouse.x, 0, mouse.z); 
         _player.LookAt(mouse);
-        float animVert, animHoriz;
 
 
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        animHoriz = horizontal;
-        animVert = vertical;
 
 
-        //if (mouse.z < _player.position.z)
-        //{
-        //    animVert = -vertical;
-        //}
-        //if (mouse.x < _player.position.x)
-        //{
-        //    animHoriz = -horizontal;
-        //}
+        if (cam != null)
+        {
+            camForward = Vector3.Scale(cam.up, new Vector3(1, 0, 1)).normalized;
+            move = vertical * camForward + horizontal * cam.right;
+        }
+        else
+        {
+            move = vertical * Vector3.forward + horizontal * Vector3.right;
+        }
 
+        if (move.magnitude > 1)
+        {
+            move.Normalize();
+        }
 
-        Vector3 animPos = new Vector3(animHoriz + _player.position.x, 0, animVert + _player.position.y);
-
-        Vector3 newAnimPos =  Vector3.RotateTowards(animPos, mouse, 1, 0);
+        Move(move);
 
         Vector3 movement = new Vector3(horizontal, 0, vertical);
 
-        Debug.Log("animPos:" + animPos);
-        Debug.Log("newAnimPos:" + newAnimPos);
-
-        animator.SetFloat("forward", newAnimPos.x - _player.position.x);
-        animator.SetFloat("turn", newAnimPos.z - _player.position.z);
-
-
-      
 
         _player.Translate(velocity * Time.fixedDeltaTime * movement, relativeTo);
     }
