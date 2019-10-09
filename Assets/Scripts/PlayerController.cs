@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
         }
 
         var res = transform.InverseTransformDirection(move);
-        UpdateAnimator(res.x, res.z);
+        UpdateAnimator(res.x * velocity, res.z * velocity);
         _player.Translate(velocity * Time.fixedDeltaTime * move, relativeTo);
     }
 
