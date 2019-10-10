@@ -8,16 +8,16 @@ public class IKHandling : MonoBehaviour
 {
     private Animator _animator;
 
-    public Transform leftHandTarget;
-    public Transform rightHandTarget;
-
     public Vector3 leftPos,  rightPos;
 
     public Transform weapon;
 
+    private WeaponHandles _weaponHandles;
     void Start()
     {
          _animator = GetComponentInChildren<Animator>();
+
+         _weaponHandles = weapon.gameObject.GetComponent<WeaponHandles>();
     }
     
     private void OnAnimatorIK(int layerIndex)
@@ -34,8 +34,8 @@ public class IKHandling : MonoBehaviour
        
         weapon.rotation = rot;
         
-        SetIKParams(AvatarIKGoal.LeftHand, leftHandTarget.position);
-        SetIKParams(AvatarIKGoal.RightHand, rightHandTarget.position);
+        SetIKParams(AvatarIKGoal.LeftHand, _weaponHandles.GetLeftHandle());
+        SetIKParams(AvatarIKGoal.RightHand, _weaponHandles.GetRightHandle());
     }
 
     //Bind hands animation to handle object on weapon
