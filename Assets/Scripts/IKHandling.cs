@@ -8,7 +8,7 @@ public class IKHandling : MonoBehaviour
 {
     private Animator _animator;
 
-    public Vector3 leftPos,  rightPos;
+    private Vector3 leftPos,  rightPos;
 
     public Transform weapon;
 
@@ -17,7 +17,7 @@ public class IKHandling : MonoBehaviour
     {
          _animator = GetComponentInChildren<Animator>();
 
-         _weaponHandles = weapon.gameObject.GetComponent<WeaponHandles>();
+         _weaponHandles = weapon.gameObject.GetComponentInChildren<WeaponHandles>();
     }
     
     private void OnAnimatorIK(int layerIndex)
